@@ -22,4 +22,3 @@ async def predict(features: HouseFeatures):
     garden_binary = 1 if features.garden else 0
     y_pred = model.predict([[features.size, features.bedrooms, garden_binary]])[0]
     return {"y_pred": y_pred}
-
