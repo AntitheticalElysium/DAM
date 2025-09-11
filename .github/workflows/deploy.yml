@@ -32,7 +32,15 @@ jobs:
           username: ${{ secrets.VM_USER }}
           password: ${{ secrets.VM_PASSWORD }}
           script: |
+            # Stop and remove any container currently using port 8888
+            CONTAINER_ID=$(docker ps -q --filter "publish=8888")
+            if [ -n "$CONTAINER_ID" ]; then
+              docker stop $CONTAINER_ID
+              docker rm $CONTAINER_ID
+            fi
+
+            # Pull the latest Docker image
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/house-api:latest
-            docker stop house-api || true
-            docker rm house-api || true
+
+            # Run the container
             docker run -d -p 8888:8888 --name house-api ${{ secrets.DOCKERHUB_USERNAME }}/house-api:latest
