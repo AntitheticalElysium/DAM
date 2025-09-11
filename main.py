@@ -1,24 +1,16 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import joblib
+from transformers import pipeline
 
-model = joblib.load("regression.joblib")
+app = FastAPI(title="Text Summarization API")
 
-app = FastAPI()
+summarizer = pipeline("summarization", model="t5-small")
 
-class HouseFeatures(BaseModel):
-    size: float
-    bedrooms: int
-    garden: bool
+class TextInput(BaseModel):
+    text: str
 
-# Browser test
-@app.get("/predict")
-async def predict_test():
-    return {"y_pred": 2}
+@app.post("/summarize")
+def summarize(input: TextInput):
+    summary = summarizer(input.text, max_length=60, min_length=15, do_sample=False)
+    return {"summary": summary[0]['summary_text']}
 
-# POST for predictions
-@app.post("/predict")
-async def predict(features: HouseFeatures):
-    garden_binary = 1 if features.garden else 0
-    y_pred = model.predict([[features.size, features.bedrooms, garden_binary]])[0]
-    return {"y_pred": y_pred}

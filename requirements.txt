@@ -1,6 +1,14 @@
-streamlit
 joblib
 pandas
 scikit-learn
 fastapi
 uvicorn
+transformers
+fastapi
+uvicorn
+transformers
+torch
+streamlit
+requests
+PyPDF2
+
